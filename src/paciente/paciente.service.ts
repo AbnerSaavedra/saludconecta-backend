@@ -1,5 +1,5 @@
 // src/paciente/paciente.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
@@ -9,10 +9,23 @@ export class PacienteService {
   constructor(private readonly prisma: PrismaService) {}
 
   async crear(dto: CreatePacienteDto) {
+    const cedulaExistente = await this.prisma.paciente.findUnique({
+      where: { cedula: dto.cedula },
+    });
+
+    if (cedulaExistente) {
+      throw new BadRequestException('La cédula ya está registrada');
+    }
+
     return this.prisma.paciente.create({
       data: {
-        ...dto,
+        cedula: dto.cedula,
+        nombre: dto.nombre,
+        apellido: dto.apellido,
         fechaNacimiento: new Date(dto.fechaNacimiento),
+        telefono: dto.telefono,
+        correo: dto.correo,
+        direccion: dto.direccion,
       },
     });
   }

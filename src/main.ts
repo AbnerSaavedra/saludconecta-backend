@@ -4,6 +4,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: '*', // o especifica tu IP móvil si quieres restringir
+  });
 
   const config = new DocumentBuilder()
     .setTitle('API Clínica SaludConecta')

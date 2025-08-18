@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { PacienteService } from './paciente.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
@@ -18,6 +19,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
+
 @ApiTags('Pacientes')
 @Controller('pacientes')
 export class PacienteController {
@@ -27,15 +29,23 @@ export class PacienteController {
   @ApiOperation({ summary: 'Crear paciente clínico' })
   @ApiResponse({ status: 201, description: 'Paciente creado exitosamente' })
   @ApiBody({ type: CreatePacienteDto })
-  crear(@Body() dto: CreatePacienteDto) {
-    return this.pacienteService.crear(dto);
+  async crear(@Body() dto: CreatePacienteDto) {
+    const paciente = await this.pacienteService.crear(dto);
+    return {
+      mensaje: 'Paciente creado exitosamente',
+      paciente,
+    };
   }
 
   @Get()
   @ApiOperation({ summary: 'Listar todos los pacientes' })
   @ApiResponse({ status: 200, description: 'Listado completo de pacientes' })
-  listar() {
-    return this.pacienteService.listarTodos();
+  async listar() {
+    const pacientes = await this.pacienteService.listarTodos();
+    return {
+      mensaje: `Se encontraron ${pacientes.length} pacientes registrados`,
+      pacientes,
+    };
   }
 
   @Get(':id')
@@ -43,8 +53,15 @@ export class PacienteController {
   @ApiParam({ name: 'id', type: Number, description: 'ID del paciente' })
   @ApiResponse({ status: 200, description: 'Paciente encontrado' })
   @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
-  buscar(@Param('id') id: string) {
-    return this.pacienteService.buscarPorId(+id);
+  async buscar(@Param('id') id: string) {
+    const paciente = await this.pacienteService.buscarPorId(+id);
+    if (!paciente) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+    return {
+      mensaje: 'Paciente encontrado',
+      paciente,
+    };
   }
 
   @Put(':id')
@@ -53,8 +70,15 @@ export class PacienteController {
   @ApiBody({ type: UpdatePacienteDto })
   @ApiResponse({ status: 200, description: 'Paciente actualizado correctamente' })
   @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
-  actualizar(@Param('id') id: string, @Body() dto: UpdatePacienteDto) {
-    return this.pacienteService.actualizar(+id, dto);
+  async actualizar(@Param('id') id: string, @Body() dto: UpdatePacienteDto) {
+    const paciente = await this.pacienteService.actualizar(+id, dto);
+    if (!paciente) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+    return {
+      mensaje: 'Paciente actualizado correctamente',
+      paciente,
+    };
   }
 
   @Delete(':id')
@@ -62,7 +86,13 @@ export class PacienteController {
   @ApiParam({ name: 'id', type: Number, description: 'ID del paciente' })
   @ApiResponse({ status: 200, description: 'Paciente eliminado correctamente' })
   @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
-  eliminar(@Param('id') id: string) {
-    return this.pacienteService.eliminar(+id);
+  async eliminar(@Param('id') id: string) {
+    const eliminado = await this.pacienteService.eliminar(+id);
+    if (!eliminado) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+    return {
+      mensaje: 'Paciente eliminado correctamente',
+    };
   }
 }
