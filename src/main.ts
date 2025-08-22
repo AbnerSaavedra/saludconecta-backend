@@ -4,8 +4,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.enableCors({
-    origin: '*', // o especifica tu IP móvil si quieres restringir
+    origin: '*', // Puedes restringir a tu IP móvil si lo deseas
   });
 
   const config = new DocumentBuilder()
@@ -13,6 +14,15 @@ async function bootstrap() {
     .setDescription('Documentación ética y simbólica de endpoints clínicos')
     .setVersion('1.0')
     .addTag('Pacientes')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Introduce tu token clínico para acceder a endpoints protegidos',
+      },
+      'access-token', // Este nombre se usará en los controladores
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

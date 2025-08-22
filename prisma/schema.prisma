@@ -26,3 +26,20 @@ model Paciente {
   actualizadoEn   DateTime @updatedAt
 }
 
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role
+  name      String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  MEDICO
+  ASISTENTE
+}
+
+
+
