@@ -5,5 +5,5 @@ export const generateAccessToken = (jwt: JwtService, user: User): string =>
   jwt.sign({
     sub: user.id,
     email: user.email,
-    role: user.role,
+    role: user.roles,
   });

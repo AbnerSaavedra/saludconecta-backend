@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { comparePassword, hashPassword } from '../helpers/hash.helper';
@@ -6,6 +6,7 @@ import { generateAccessToken } from '../helpers/token.helper';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/loginResponse.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
             id: true,
             email: true,
             password: true,
-            role: true,
+            roles: true,
         },
         });
 
@@ -39,28 +40,41 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
     throw new UnauthorizedException('Credenciales inválidas. Verifica tu correo clínico y contraseña.');
     }
 
-    const token = this.jwtService.sign({ sub: user.id, role: user.role });
+    const token = this.jwtService.sign({ sub: user.id, role: user.roles });
 
     return {
     accessToken: token,
-    role: user.role,
+    roles: user.roles,
     email: user.email,
     };
 }
 
 
-  async register(dto: CreateUserDto) {
-    const hashed = await hashPassword(dto.password);
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        password: hashed,
-        role: dto.role,
-      },
-    });
+  async register(dto: RegisterDto) {
+  const existing = await this.prisma.user.findUnique({
+    where: { email: dto.email },
+  });
 
-    return {
-      access_token: generateAccessToken(this.jwtService, user),
-    };
+  if (existing) {
+    throw new BadRequestException('Ya existe un usuario con ese correo');
   }
+
+  const hashed = await hashPassword(dto.password);
+
+  const user = await this.prisma.user.create({
+    data: {
+      name: dto.name,
+      email: dto.email,
+      password: hashed,
+      roles: dto.roles,
+    },
+  });
+
+  return {
+    access_token: generateAccessToken(this.jwtService, user),
+    roles: user.roles,
+    email: user.email,
+  };
+}
+
 }

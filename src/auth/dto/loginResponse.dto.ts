@@ -1,12 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
 export class LoginResponseDto {
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', description: 'Token JWT clínico' })
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'Token JWT clínico',
+  })
   accessToken: string;
 
-  @ApiProperty({ example: 'MÉDICO', description: 'Rol clínico del usuario autenticado' })
-  role: string;
+  @ApiProperty({
+    isArray: true,
+    enum: Role,
+    example: [Role.ADMIN, Role.MEDICO],
+    description: 'Roles clínicos del usuario autenticado',
+  })
+  roles: Role[];
 
-  @ApiProperty({ example: 'juanperez@email.com', description: 'Email simbólico del usuario' })
+  @ApiProperty({
+    example: 'juanperez@email.com',
+    description: 'Email simbólico del usuario',
+  })
   email: string;
 }

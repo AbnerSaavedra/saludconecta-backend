@@ -14,23 +14,28 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        role: true,
+        roles: true,
         createdAt: true,
       },
     });
   }
 
-  async findByRole(role: Role) {
-    return this.prisma.user.findMany({
-      where: { role },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        createdAt: true,
+  async findByRole(roles: Role[]) {
+  return this.prisma.user.findMany({
+    where: {
+      roles: {
+        hasSome: roles, // ✅ busca usuarios que tengan al menos uno de los roles
       },
-    });
-  }
+    },
+    select: {
+      id: true,
+      email: true,
+      roles: true,
+      createdAt: true,
+    },
+  });
+}
+
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
@@ -38,7 +43,7 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        role: true,
+        roles: true,
         createdAt: true,
       },
     });
@@ -57,7 +62,7 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        role: true,
+        roles: true,
         createdAt: true,
       },
     });
@@ -69,7 +74,7 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        role: true,
+        roles: true,
         createdAt: true,
       },
     });

@@ -44,7 +44,7 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Token inválido o ausente' })
   @ApiResponse({ status: 403, description: 'Acceso denegado por rol clínico' })
   findMedicos() {
-    return this.users.findByRole(Role.MEDICO);
+    return this.users.findByRole([Role.MEDICO, Role.ADMIN]);
   }
 
   @Roles(Role.ADMIN)
