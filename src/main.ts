@@ -1,13 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: '*', // Puedes restringir a tu IP móvil si lo deseas
+    origin: '*',
   });
+
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true, // ✅ necesario para que @Body() instancie el DTO
+  }));
 
   const config = new DocumentBuilder()
     .setTitle('API Clínica SaludConecta')
@@ -21,7 +28,7 @@ async function bootstrap() {
         bearerFormat: 'JWT',
         description: 'Introduce tu token clínico para acceder a endpoints protegidos',
       },
-      'access-token', // Este nombre se usará en los controladores
+      'access-token',
     )
     .build();
 

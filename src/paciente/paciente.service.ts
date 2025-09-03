@@ -57,4 +57,50 @@ export class PacienteService {
     await this.buscarPorId(id); // Validación ética
     return this.prisma.paciente.delete({ where: { id } });
   }
+
+  async obtenerIntervencionesPorPaciente(pacienteId: number) {
+    return this.prisma.intervencion.findMany({
+      where: { pacienteId },
+      orderBy: { fecha: 'desc' },
+      include: {
+        usuario: {
+          select: {
+            name: true,
+            specialty: true,
+          },
+        },
+      },
+    });
+  }
+
+
+  async obtenerHistorialCompleto(pacienteId: number) {
+    const citas = await this.prisma.cita.findMany({
+      where: { pacienteId },
+      orderBy: { fecha: 'desc' },
+    });
+
+    const intervenciones = await this.prisma.intervencion.findMany({
+      where: { pacienteId },
+      orderBy: { fecha: 'desc' },
+    });
+
+    return { citas, intervenciones };
+  }
+
+  async obtenerCitasPorPaciente(pacienteId: number) {
+    return this.prisma.cita.findMany({
+      where: { pacienteId },
+      orderBy: { fecha: 'desc' },
+    });
+  }
+
+  async obtenerOdontograma(pacienteId: number) {
+    return this.prisma.intervencion.findMany({
+      where: { pacienteId },
+      orderBy: { fecha: 'desc' },
+    });
+  }
+
+
 }

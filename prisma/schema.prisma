@@ -24,15 +24,26 @@ model Paciente {
   direccion       String?
   creadoEn        DateTime @default(now())
   actualizadoEn   DateTime @updatedAt
+
+  // 🔁 Relaciones inversas
+  citas          Cita[]
+  odontogramas   Odontograma[]
+  intervenciones Intervencion[]
 }
 
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  roles      Role[]
+  roles     Role[]
   name      String
+  specialty String?
   createdAt DateTime @default(now())
+
+  // 🔁 Relaciones inversas
+  odontograma    Odontograma[]
+  citas          Cita[]
+  intervenciones Intervencion[]
 }
 
 enum Role {
@@ -41,5 +52,44 @@ enum Role {
   ASISTENTE
 }
 
+model Odontograma {
+  id          String   @id @default(uuid())
+  pieza       String
+  diagnostico String
+  tratamiento String
+  fecha       DateTime
+  usuarioId   String
+  pacienteId  Int
+  usuario     User     @relation(fields: [usuarioId], references: [id])
+  paciente    Paciente @relation(fields: [pacienteId], references: [id])
+  createdAt   DateTime @default(now())
+}
 
+model Cita {
+  id           String   @id @default(uuid())
+  fecha        DateTime
+  hora         String
+  motivo       String?
+  estado       String   @default("PENDIENTE")
+  especialidad String
+  usuarioId    String
+  pacienteId   Int
+  usuario      User     @relation(fields: [usuarioId], references: [id])
+  paciente     Paciente @relation(fields: [pacienteId], references: [id])
+  createdAt    DateTime @default(now())
+}
 
+model Intervencion {
+  id          String   @id @default(uuid())
+  pieza       String
+  diagnostico String
+  tratamiento String
+  fecha       DateTime
+  creadoEn    DateTime @default(now())
+
+  pacienteId Int
+  paciente   Paciente @relation(fields: [pacienteId], references: [id])
+
+  usuarioId String
+  usuario   User   @relation(fields: [usuarioId], references: [id])
+}

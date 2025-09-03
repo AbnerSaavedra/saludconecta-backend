@@ -9,6 +9,12 @@ export class LoginResponseDto {
   accessToken: string;
 
   @ApiProperty({
+    example: 'Pedro Pérez',
+    description: 'El nombre del usuario',
+  })
+  name: string;
+
+  @ApiProperty({
     isArray: true,
     enum: Role,
     example: [Role.ADMIN, Role.MEDICO],
@@ -21,4 +27,10 @@ export class LoginResponseDto {
     description: 'Email simbólico del usuario',
   })
   email: string;
+
+  @ApiProperty({
+    example: 'Odontología',
+    description: 'La especialidad que tenga el usurio con rol Médico',
+  })
+  specialty?: string;
 }

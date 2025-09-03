@@ -95,4 +95,25 @@ export class PacienteController {
       mensaje: 'Paciente eliminado correctamente',
     };
   }
+
+  @Get(':id/intervenciones')
+  async intervenciones(@Param('id') id: number) {
+    return this.pacienteService.obtenerIntervencionesPorPaciente(id);
+  }
+
+  @Get(':id/historial')
+  async historial(@Param('id') id: number) {
+    return this.pacienteService.obtenerHistorialCompleto(id);
+  }
+
+  @Get(':id/citas')
+  async citas(@Param('id') id: number) {
+    return this.pacienteService.obtenerCitasPorPaciente(id);
+  }
+
+  @Get(':id/odontograma')
+  async odontograma(@Param('id') id: number) {
+    return this.pacienteService.obtenerOdontograma(id);
+  }
+
 }

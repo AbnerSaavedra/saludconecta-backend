@@ -23,6 +23,8 @@ export class AuthService {
             email: true,
             password: true,
             roles: true,
+            name: true,
+            specialty: true
         },
         });
 
@@ -40,12 +42,20 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
     throw new UnauthorizedException('Credenciales inválidas. Verifica tu correo clínico y contraseña.');
     }
 
-    const token = this.jwtService.sign({ sub: user.id, role: user.roles });
+    //const token = this.jwtService.sign({ sub: user.id, role: user.roles });
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      roles: user.roles, // ✅ plural y consistente
+    });
+
 
     return {
-    accessToken: token,
-    roles: user.roles,
-    email: user.email,
+      accessToken: token,
+      roles: user.roles,
+      email: user.email,
+      name: user.name,
+      specialty: user?.specialty || ''
     };
 }
 
@@ -67,6 +77,7 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
       email: dto.email,
       password: hashed,
       roles: dto.roles,
+      specialty: dto.specialty ?? ''
     },
   });
 
