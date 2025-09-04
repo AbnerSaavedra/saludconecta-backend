@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   NotFoundException,
+  Req,
 } from '@nestjs/common';
 import { PacienteService } from './paciente.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
@@ -18,6 +19,9 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { CreateOdontogramaDto } from './dto/CreateOdontogramaDto';
+import { CreateCitaDto } from './dto/CreateCitaDto';
+import { CreateIntervencionDto } from './dto/CreateIntervencionDto';
 
 
 @ApiTags('Pacientes')
@@ -114,6 +118,36 @@ export class PacienteController {
   @Get(':id/odontograma')
   async odontograma(@Param('id') id: number) {
     return this.pacienteService.obtenerOdontograma(id);
+  }
+
+  @Post(':id/odontograma')
+  async registrarOdontograma(
+    @Param('id') id: number,
+    @Body() dto: CreateOdontogramaDto,
+    @Req() req: Request
+  ) {
+    const usuarioId = (req as any).user.id;
+    return this.pacienteService.registrarOdontograma({ ...dto, pacienteId: id, usuarioId: usuarioId });
+  }
+
+  @Post(':id/citas')
+  async registrarCita(
+    @Param('id') id: number,
+    @Body() dto: CreateCitaDto,
+    @Req() req: Request
+  ) {
+    const usuarioId = (req as any).user.id;
+    return this.pacienteService.registrarCita({ ...dto, pacienteId: id, usuarioId: usuarioId });
+  }
+
+    @Post(':id/intervenciones')
+    async registrarIntervencion(
+    @Param('id') id: number,
+    @Body() dto: CreateIntervencionDto,
+    @Req() req: Request
+  ) {
+    const usuarioId = (req as any).user.id;
+    return this.pacienteService.registrarIntervencion({ ...dto, pacienteId: id, usuarioId: usuarioId });
   }
 
 }

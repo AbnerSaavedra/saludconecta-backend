@@ -3,6 +3,9 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
+import { CreateOdontogramaDto } from './dto/CreateOdontogramaDto';
+import { CreateCitaDto } from './dto/CreateCitaDto';
+import { CreateIntervencionDto } from './dto/CreateIntervencionDto';
 
 @Injectable()
 export class PacienteService {
@@ -102,5 +105,31 @@ export class PacienteService {
     });
   }
 
+    async registrarOdontograma(dto: CreateOdontogramaDto) {
+    return this.prisma.odontograma.create({
+      data: {
+        ...dto,
+      },
+    });
+  }
+
+  async registrarCita(dto: CreateCitaDto) {
+    return this.prisma.cita.create({
+      data: {
+        estado: 'PENDIENTE',
+        ...dto,
+      },
+    });
+  }
+
+  async registrarIntervencion(dto: CreateIntervencionDto) {
+    return this.prisma.intervencion.create({
+      data: {
+        ...dto,
+      },
+    });
+  }
+
+  
 
 }
