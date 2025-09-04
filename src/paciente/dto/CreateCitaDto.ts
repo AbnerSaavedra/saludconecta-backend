@@ -1,9 +1,16 @@
+import { IsString, IsOptional, IsDateString } from 'class-validator';
+
 export class CreateCitaDto {
-  fecha: Date;
+  @IsDateString()
+  fecha: string;
+
+  @IsString()
   hora: string;
+
+  @IsOptional()
+  @IsString()
   motivo?: string;
-  estado?: string;
+
+  @IsString()
   especialidad: string;
-  pacienteId: number;
-  usuarioId: string;
 }

@@ -7,6 +7,23 @@ import { CreateOdontogramaDto } from './dto/CreateOdontogramaDto';
 import { CreateCitaDto } from './dto/CreateCitaDto';
 import { CreateIntervencionDto } from './dto/CreateIntervencionDto';
 
+type DatosCita = {
+  fecha: string;
+  hora: string;
+  motivo?: string;
+  especialidad: string;
+  estado?: string;
+  pacienteId: number;
+  usuarioId: string;
+};
+
+type DatosOdontograma = CreateOdontogramaDto & {
+  pacienteId: number;
+  usuarioId: string;
+};
+
+
+
 @Injectable()
 export class PacienteService {
   constructor(private readonly prisma: PrismaService) {}
@@ -105,22 +122,40 @@ export class PacienteService {
     });
   }
 
-    async registrarOdontograma(dto: CreateOdontogramaDto) {
+  async registrarOdontograma(dto: DatosOdontograma) {
     return this.prisma.odontograma.create({
       data: {
-        ...dto,
+        pieza: dto.pieza,
+        diagnostico: dto.diagnostico,
+        tratamiento: dto.tratamiento,
+        fecha: new Date(dto.fecha),
+        paciente: { connect: { id: dto.pacienteId } },
+        usuario: { connect: { id: dto.usuarioId } },
       },
     });
+  }
+  
+
+  async registrarCita(dto: DatosCita) {
+    console.log("Registrar cita: ", dto)
+  const { fecha, hora, motivo, especialidad, estado, pacienteId, usuarioId } = dto;
+
+  if (!pacienteId || !usuarioId) {
+    throw new Error('pacienteId y usuarioId son obligatorios');
   }
 
-  async registrarCita(dto: CreateCitaDto) {
-    return this.prisma.cita.create({
-      data: {
-        estado: 'PENDIENTE',
-        ...dto,
-      },
-    });
-  }
+  return this.prisma.cita.create({
+    data: {
+      fecha: new Date(fecha),
+      hora,
+      motivo: motivo ?? null,
+      especialidad,
+      estado: estado ?? 'PENDIENTE',
+      pacienteId,
+      usuarioId,
+    },
+  });
+}
 
   async registrarIntervencion(dto: CreateIntervencionDto) {
     return this.prisma.intervencion.create({

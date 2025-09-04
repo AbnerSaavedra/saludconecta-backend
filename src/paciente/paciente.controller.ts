@@ -8,6 +8,9 @@ import {
   Delete,
   NotFoundException,
   Req,
+  ForbiddenException,
+  BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { PacienteService } from './paciente.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
@@ -22,10 +25,13 @@ import {
 import { CreateOdontogramaDto } from './dto/CreateOdontogramaDto';
 import { CreateCitaDto } from './dto/CreateCitaDto';
 import { CreateIntervencionDto } from './dto/CreateIntervencionDto';
+import { AuthGuard } from '@nestjs/passport';
+import { esFechaIgualOPosterior } from 'src/utils/functions';
 
 
 @ApiTags('Pacientes')
 @Controller('pacientes')
+@UseGuards(AuthGuard('jwt'))
 export class PacienteController {
   constructor(private readonly pacienteService: PacienteService) {}
 
@@ -122,22 +128,65 @@ export class PacienteController {
 
   @Post(':id/odontograma')
   async registrarOdontograma(
-    @Param('id') id: number,
     @Body() dto: CreateOdontogramaDto,
+    @Param('id') id: number,
     @Req() req: Request
   ) {
     const usuarioId = (req as any).user.id;
-    return this.pacienteService.registrarOdontograma({ ...dto, pacienteId: id, usuarioId: usuarioId });
+
+    const odontograma = await this.pacienteService.registrarOdontograma({
+      ...dto,
+      pacienteId: id,
+      usuarioId,
+    });
   }
 
   @Post(':id/citas')
   async registrarCita(
-    @Param('id') id: number,
-    @Body() dto: CreateCitaDto,
+  @Param('id') id: number,
+  @Body() dto: Omit<CreateCitaDto, 'estado'> & {
+  pacienteId: number;
+  usuarioId: string;
+  estado?: string;
+},
     @Req() req: Request
   ) {
-    const usuarioId = (req as any).user.id;
-    return this.pacienteService.registrarCita({ ...dto, pacienteId: id, usuarioId: usuarioId });
+    console.log("Agregar cita: ", dto)
+    const user = (req as any).user;
+    // ✅ Validación ética por rol
+    if (!user.roles.includes('MEDICO')) {
+      throw new ForbiddenException('Solo médicos pueden registrar citas');
+    }
+
+    // ✅ Validación de fecha
+    const fechaCita = new Date(`${dto.fecha}T${dto.hora}:00`);
+    const hoy = new Date();
+
+    hoy.setHours(0, 0, 0, 0);
+
+    const fechaCitaNormalizada = new Date(fechaCita);
+    fechaCitaNormalizada.setHours(0, 0, 0, 0);
+    console.log("Fecha cita: ", fechaCita)
+    console.log("Hoy: ", hoy)
+    if (fechaCitaNormalizada < hoy) {
+      throw new BadRequestException('La fecha debe ser igual o posterior a hoy');
+    }
+
+    const usuarioId = user.id;
+
+    // ✅ Registro clínico
+    const cita = await this.pacienteService.registrarCita({
+      ...dto,
+      pacienteId: id,
+      usuarioId,
+      estado: 'PENDIENTE',
+    });
+
+    // ✅ Respuesta estructurada
+    return {
+      mensaje: '✅ Cita registrada correctamente',
+      cita,
+    };
   }
 
     @Post(':id/intervenciones')
