@@ -124,8 +124,8 @@ export class PacienteService {
     return this.prisma.odontograma.create({
       data: {
         pieza: dto.pieza,
-        diagnostico: dto.diagnostico,
-        tratamiento: dto.tratamiento,
+        estado: dto.estado,
+        tratamientoSugerido: dto.tratamientoSugerido,
         fecha: new Date(dto.fecha),
         paciente: { connect: { id: dto.pacienteId } },
         usuario: { connect: { id: dto.usuarioId } },
@@ -156,9 +156,17 @@ export class PacienteService {
 }
 
   async registrarIntervencion(dto: CreateIntervencionDto) {
-    return this.prisma.intervencion.create({
-      data: {
-        ...dto,
+      return this.prisma.intervencion.create({
+        data: {
+        tipo: dto.tipo ?? null,
+        diagnostico: dto.diagnostico,
+        tratamientoRealizado: dto.tratamientoRealizado ?? null,
+        observaciones: dto.observaciones ?? null,
+        fecha: new Date(dto.fecha),
+        pacienteId: dto.pacienteId,
+        usuarioId: dto.usuarioId,
+        odontogramaId: dto.usuarioId,
+        ...(dto.odontogramaId && { odontogramaId: dto.odontogramaId }),
       },
     });
   }

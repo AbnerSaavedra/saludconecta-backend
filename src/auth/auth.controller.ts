@@ -33,7 +33,7 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Usuario registrado con éxito' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   register(@Body() dto: RegisterDto) {
-    console.log("Dto user controller: ", dto)
+    //console.log("Dto user controller: ", dto)
     return this.authService.register(dto);
   }
 

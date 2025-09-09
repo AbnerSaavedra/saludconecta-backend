@@ -22,12 +22,20 @@ export class RegisterDto {
   @IsEnum(Role, { each: true })
   roles: Role[];
 
-  @ApiProperty({
-    example: 'Pediatría',
-    description: 'Especialidad médica (obligatoria si el rol incluye MEDICO)',
-    required: false,
-  })
+  @ApiProperty({ example: 'Pediatría', required: false })
   @ValidateIf((dto) => dto.roles?.includes(Role.MEDICO))
   @IsNotEmpty({ message: 'La especialidad es obligatoria para el rol MEDICO' })
   specialty?: string;
+
+  @ApiProperty({ example: '+58 412-1234567', required: false })
+  @IsString()
+  telefono?: string;
+
+  @ApiProperty({ example: 'Barquisimeto, Lara', required: false })
+  @IsString()
+  direccion?: string;
+
+  @ApiProperty({ example: '1990-05-12', required: false })
+  @IsString()
+  fechaNacimiento?: string;
 }

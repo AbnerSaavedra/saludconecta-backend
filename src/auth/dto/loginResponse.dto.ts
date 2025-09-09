@@ -33,4 +33,19 @@ export class LoginResponseDto {
     description: 'La especialidad que tenga el usurio con rol Médico',
   })
   specialty?: string;
+
+  @ApiProperty({ example: '+58 412-1234567', required: false })
+  telefono?: string;
+
+  @ApiProperty({ example: 'Barquisimeto, Lara', required: false })
+  direccion?: string;
+
+  @ApiProperty({ example: '1990-05-12', required: false })
+  fechaNacimiento?: string;
+
+  @ApiProperty({ example: 'Activo', enum: ['Activo', 'Suspendido'], required: false })
+  estado?: string;
+
+  @ApiProperty({ example: '2025-09-09T15:00:00.000Z', required: false })
+  createdAt?: string;
 }

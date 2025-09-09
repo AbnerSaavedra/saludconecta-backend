@@ -5,10 +5,10 @@ export class CreateOdontogramaDto {
   pieza: string;
 
   @IsString()
-  diagnostico: string;
+  estado: string;
 
   @IsString()
-  tratamiento: string;
+  tratamientoSugerido: string;
 
   @IsDateString()
   fecha: Date;

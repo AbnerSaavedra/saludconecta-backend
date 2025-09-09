@@ -25,8 +25,9 @@ async registrarIntervencion(dto: RegistroOdontogramaDto, usuarioId: string) {
     return this.prisma.odontograma.create({
       data: {
         pieza: dto.pieza,
-        diagnostico: dto.diagnostico,
-        tratamiento: dto.tratamiento,
+        cuadrante: dto.cuadrante ?? null,
+        estado: dto.estado,
+        tratamientoSugerido: dto.tratamientoSugerido,
         fecha: new Date(dto.fecha),
         usuarioId,
         pacienteId: dto.pacienteId,
@@ -77,7 +78,7 @@ async generarHistorialPDF(usuarioId: string): Promise<Buffer> {
 
     intervenciones.forEach((i) => {
       const fecha = new Date(i.fecha).toLocaleDateString();
-      const texto = `🦷 Pieza: ${i.pieza} | 📅 Fecha: ${fecha}\nDiagnóstico: ${i.diagnostico}\nTratamiento: ${i.tratamiento}`;
+      const texto = `🦷 Pieza: ${i.pieza} | 📅 Fecha: ${fecha}\Estado: ${i.estado}\nTratamiento sugerido: ${i.tratamientoSugerido}`;
       page.drawText(texto, {
         x: 50,
         y,

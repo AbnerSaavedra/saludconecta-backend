@@ -3,19 +3,20 @@ import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 
+const port = process.env.MAIL_PORT ? parseInt(process.env.MAIL_PORT, 10) : 2525;
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.tuservidor.com',
-        port: 587,
+        host: process.env.MAIL_HOST,
+        port,
         auth: {
-          user: 'tu-correo@tusistema.com',
-          pass: 'clave-segura',
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
         },
       },
       defaults: {
-        from: '"Soporte Clínico" <soporte@tusistema.com>',
+        from: '"SaludConecta" <no-reply@saludconecta.com>',
       },
     }),
   ],

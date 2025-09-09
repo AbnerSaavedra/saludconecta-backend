@@ -12,9 +12,9 @@ export class LoginDto {
 
   @ApiProperty({
     example: 'securePass123',
-    minLength: 8,
-    description: 'Contraseña clínica con mínimo 8 caracteres',
+    minLength: 4,
+    description: 'Contraseña clínica con mínimo 4 caracteres',
   })
-  @MinLength(8)
+  @MinLength(4)
   password: string;
 }

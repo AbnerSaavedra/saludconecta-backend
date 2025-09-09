@@ -27,7 +27,12 @@ export class AuthService {
             password: true,
             roles: true,
             name: true,
-            specialty: true
+            specialty: true,
+            telefono: true,
+            direccion: true,
+            fechaNacimiento: true,
+            estado: true,
+            createdAt: true,
         },
         });
 
@@ -40,6 +45,8 @@ export class AuthService {
   // auth.service.ts
 async login(dto: LoginDto): Promise<LoginResponseDto> {
   const user = await this.validateUser(dto.email, dto.password);
+
+  console.log("User: ", user)
 
     if (!user) {
     throw new UnauthorizedException('Credenciales inválidas. Verifica tu correo clínico y contraseña.');
@@ -58,12 +65,18 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
       roles: user.roles,
       email: user.email,
       name: user.name,
-      specialty: user?.specialty || ''
+      specialty: user?.specialty || '',
+      telefono: user?.telefono || '',
+      direccion: user?.direccion || '',
+      fechaNacimiento: user.fechaNacimiento?.toISOString(),
+      estado: user.estado,
+      createdAt: user.createdAt.toISOString(),
     };
 }
 
 
   async register(dto: RegisterDto) {
+    console.log("Usuario DTO: ", dto)
   const existing = await this.prisma.user.findUnique({
     where: { email: dto.email },
   });
@@ -80,7 +93,10 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
       email: dto.email,
       password: hashed,
       roles: dto.roles,
-      specialty: dto.specialty ?? ''
+      specialty: dto.specialty ?? '',
+      telefono: dto.telefono,
+      direccion: dto.direccion,
+      fechaNacimiento: dto.fechaNacimiento ? new Date(dto.fechaNacimiento) : undefined,
     },
   });
 

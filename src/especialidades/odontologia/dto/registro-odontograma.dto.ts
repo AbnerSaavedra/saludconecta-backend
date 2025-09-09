@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsDateString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, IsDateString, IsInt, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegistroOdontogramaDto {
@@ -7,21 +7,33 @@ export class RegistroOdontogramaDto {
   @IsString()
   pieza: string;
 
-  @ApiProperty({ example: 'Caries profunda', description: 'Diagnóstico clínico' })
+  @ApiProperty({ example: 'superior izquierdo', description: 'Cuadrante dental (opcional)' })
+  @IsOptional()
+  @IsString()
+  cuadrante?: string;
+
+  @ApiProperty({ example: 'pendiente', description: 'Estado clínico de la pieza' })
   @IsNotEmpty()
   @IsString()
-  diagnostico: string;
+  estado: string;
 
-  @ApiProperty({ example: 'Obturación con resina', description: 'Tratamiento aplicado' })
+  @ApiProperty({ example: 'Obturación con resina', description: 'Tratamiento sugerido por el profesional' })
   @IsNotEmpty()
   @IsString()
-  tratamiento: string;
+  tratamientoSugerido: string;
 
-  @ApiProperty({ example: '2025-09-02', description: 'Fecha de intervención' })
+  @ApiProperty({ example: '2025-09-02', description: 'Fecha de registro clínico' })
   @IsNotEmpty()
   @IsDateString()
   fecha: string;
 
+  @ApiProperty({ example: 12, description: 'ID del paciente asociado' })
+  @IsNotEmpty()
   @IsInt()
   pacienteId: number;
+
+  @ApiProperty({ example: 'uuid-del-usuario', description: 'ID del profesional que registra el odontograma' })
+  @IsNotEmpty()
+  @IsString()
+  usuarioId: string;
 }

@@ -18,8 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "copy:templates": "npx cpx \"src/mail/templates/**/*\" dist/mail/templates"
-
+    "copy:templates": "ts-node src/scripts/copy-templates.ts"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
@@ -53,6 +52,7 @@
     "@types/node": "^22.10.7",
     "@types/pdfmake": "^0.2.11",
     "@types/supertest": "^6.0.2",
+    "copyfiles": "^2.4.1",
     "cpx": "^1.5.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",

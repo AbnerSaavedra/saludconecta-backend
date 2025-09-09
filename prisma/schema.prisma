@@ -38,6 +38,10 @@ model User {
   roles     Role[]
   name      String
   specialty String?
+  telefono       String?  // opcional
+  direccion      String?  // opcional
+  fechaNacimiento DateTime? // opcional, útil para validación de edad
+  estado         EstadoUsuario   @default(Activo) // 'Activo' | 'Suspendido'
   createdAt DateTime @default(now())
 
   // 🔁 Relaciones inversas
@@ -51,6 +55,12 @@ enum Role {
   MEDICO
   ASISTENTE
 }
+
+enum EstadoUsuario {
+  Activo
+  Suspendido
+}
+
 
 model Odontograma {
   id                  String   @id @default(uuid())
