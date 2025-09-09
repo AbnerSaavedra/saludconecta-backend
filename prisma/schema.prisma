@@ -53,16 +53,19 @@ enum Role {
 }
 
 model Odontograma {
-  id          String   @id @default(uuid())
-  pieza       String
-  diagnostico String
-  tratamiento String
-  fecha       DateTime
-  usuarioId   String
-  pacienteId  Int
-  usuario     User     @relation(fields: [usuarioId], references: [id])
-  paciente    Paciente @relation(fields: [pacienteId], references: [id])
-  createdAt   DateTime @default(now())
+  id                  String   @id @default(uuid())
+  pieza               String
+  cuadrante           String?
+  estado              String
+  tratamientoSugerido String   // ✅ Nuevo nombre semántico
+  fecha               DateTime
+  pacienteId          Int
+  usuarioId           String
+  createdAt           DateTime @default(now())
+
+  paciente            Paciente @relation(fields: [pacienteId], references: [id])
+  usuario             User     @relation(fields: [usuarioId], references: [id])
+  intervenciones      Intervencion[]
 }
 
 model Cita {
@@ -80,16 +83,20 @@ model Cita {
 }
 
 model Intervencion {
-  id          String   @id @default(uuid())
-  pieza       String
-  diagnostico String
-  tratamiento String
-  fecha       DateTime
-  creadoEn    DateTime @default(now())
+  id                  String   @id @default(uuid())
+  tipo                String?
+  diagnostico         String
+  tratamientoRealizado String?  // ✅ Nuevo nombre semántico
+  fecha               DateTime
+  observaciones       String?
+  creadoEn            DateTime @default(now())
 
-  pacienteId Int
-  paciente   Paciente @relation(fields: [pacienteId], references: [id])
+  pacienteId          Int
+  usuarioId           String
+  odontogramaId       String
 
-  usuarioId String
-  usuario   User   @relation(fields: [usuarioId], references: [id])
+  paciente            Paciente     @relation(fields: [pacienteId], references: [id])
+  usuario             User         @relation(fields: [usuarioId], references: [id])
+  odontograma         Odontograma  @relation(fields: [odontogramaId], references: [id])
 }
+

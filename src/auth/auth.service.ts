@@ -7,12 +7,15 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/loginResponse.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ConfigService } from '@nestjs/config';
+
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -86,6 +89,27 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
     roles: user.roles,
     email: user.email,
   };
+  
 }
+
+generarTokenRecuperacion(usuarioId: string): string {
+  return this.jwtService.sign(
+    { usuarioId },
+    { expiresIn: '15m', secret: this.configService.get('JWT_RECUPERACION') }
+  );
+}
+
+validarTokenRecuperacion(token: string): { usuarioId: string } {
+  try {
+    const payload = this.jwtService.verify(token, {
+      secret: this.configService.get<string>('JWT_RECUPERACION'),
+    });
+
+    return { usuarioId: payload.usuarioId };
+  } catch (err) {
+    throw new UnauthorizedException('Token inválido o expirado');
+  }
+}
+
 
 }

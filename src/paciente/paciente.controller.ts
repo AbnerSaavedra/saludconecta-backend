@@ -123,6 +123,7 @@ export class PacienteController {
 
   @Get(':id/odontograma')
   async odontograma(@Param('id') id: number) {
+    console.log("Obtener odontograma por paciente: ", id)
     return this.pacienteService.obtenerOdontograma(id);
   }
 

@@ -22,8 +22,6 @@ type DatosOdontograma = CreateOdontogramaDto & {
   usuarioId: string;
 };
 
-
-
 @Injectable()
 export class PacienteService {
   constructor(private readonly prisma: PrismaService) {}
@@ -116,7 +114,7 @@ export class PacienteService {
   }
 
   async obtenerOdontograma(pacienteId: number) {
-    return this.prisma.intervencion.findMany({
+    return this.prisma.odontograma.findMany({
       where: { pacienteId },
       orderBy: { fecha: 'desc' },
     });

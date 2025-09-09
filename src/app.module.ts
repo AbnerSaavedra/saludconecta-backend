@@ -7,9 +7,15 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { CitasModule } from './citas/citas.module';
+import { MailModule } from './mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PacienteModule, PrismaModule, AuthModule, UsersModule, EspecialidadesModule, CitasModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // ✅ hace que esté disponible en todos los módulos
+    }),
+    PacienteModule, PrismaModule, AuthModule, UsersModule, EspecialidadesModule, CitasModule, MailModule],
   controllers: [AppController],
   providers: [AppService],
 })

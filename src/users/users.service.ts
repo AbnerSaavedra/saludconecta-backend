@@ -4,6 +4,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { hashPassword } from 'src/helpers/hash.helper';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
@@ -79,4 +81,21 @@ export class UsersService {
       },
     });
   }
+
+  async actualizarClave(usuarioId: string, nuevaClave: string) {
+  const hash = await bcrypt.hash(nuevaClave, 10);
+  await this.prisma.user.update({
+    where: { id: usuarioId },
+    data: { password: hash },
+  });
+}
+
+// src/users/users.service.ts
+async findByEmail(email: string) {
+  return this.prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+
 }
