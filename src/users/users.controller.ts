@@ -6,6 +6,8 @@ import {
   Delete,
   Body,
   UseGuards,
+  Put,
+  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -20,6 +22,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 
 @ApiTags('Usuarios')
 @ApiBearerAuth('access-token')
@@ -76,4 +79,11 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.users.remove(id);
   }
+
+  @Put('perfil')
+  async updateProfile(@Req() req, @Body() dto: UpdateUserProfileDto) {
+    const userId = req.user.id;
+    return this.users.updateProfile(userId, dto);
+  }
+
 }

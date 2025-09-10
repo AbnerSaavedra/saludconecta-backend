@@ -16,4 +16,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsEnum(Role, { message: 'Rol no válido' })
   role?: Role;
+  fechaNacimiento: any;
 }

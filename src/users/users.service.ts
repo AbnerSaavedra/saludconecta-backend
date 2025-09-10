@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { hashPassword } from 'src/helpers/hash.helper';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 
 
 @Injectable()
@@ -97,5 +98,14 @@ async findByEmail(email: string) {
   });
 }
 
+async updateProfile(id: string, dto: UpdateUserProfileDto) {
+  return this.prisma.user.update({
+    where: { id },
+    data: {
+      ...dto,
+      fechaNacimiento: dto.fechaNacimiento ? new Date(dto.fechaNacimiento) : undefined,
+    },
+  });
+}
 
 }
