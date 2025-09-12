@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { RegistroOdontogramaDto } from './dto/registro-odontograma.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { EstadoPieza } from '@prisma/client';
 
 @Injectable()
 export class OdontologiaService {
@@ -26,7 +27,7 @@ async registrarIntervencion(dto: RegistroOdontogramaDto, usuarioId: string) {
       data: {
         pieza: dto.pieza,
         cuadrante: dto.cuadrante ?? null,
-        estado: dto.estado,
+        estado: dto.estado as EstadoPieza,
         tratamientoSugerido: dto.tratamientoSugerido,
         fecha: new Date(dto.fecha),
         usuarioId,

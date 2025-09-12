@@ -6,6 +6,7 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { CreateOdontogramaDto } from './dto/CreateOdontogramaDto';
 import { CreateCitaDto } from './dto/CreateCitaDto';
 import { CreateIntervencionDto } from './dto/CreateIntervencionDto';
+import { EstadoPieza } from '@prisma/client';
 
 type DatosCita = {
   fecha: string;
@@ -21,6 +22,7 @@ type DatosOdontograma = CreateOdontogramaDto & {
   pacienteId: number;
   usuarioId: string;
 };
+
 
 @Injectable()
 export class PacienteService {
@@ -124,7 +126,7 @@ export class PacienteService {
     return this.prisma.odontograma.create({
       data: {
         pieza: dto.pieza,
-        estado: dto.estado,
+        estado: dto.estado as EstadoPieza,
         tratamientoSugerido: dto.tratamientoSugerido,
         fecha: new Date(dto.fecha),
         paciente: { connect: { id: dto.pacienteId } },
@@ -158,6 +160,7 @@ export class PacienteService {
   async registrarIntervencion(dto: CreateIntervencionDto) {
       return this.prisma.intervencion.create({
         data: {
+        pieza: dto.pieza,
         tipo: dto.tipo ?? null,
         diagnostico: dto.diagnostico,
         tratamientoRealizado: dto.tratamientoRealizado ?? null,

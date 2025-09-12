@@ -2,6 +2,11 @@ import { IsNotEmpty, IsString, IsDateString, IsOptional, IsInt } from 'class-val
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateIntervencionDto {
+  @ApiProperty({ example: '1.6', description: 'Pieza dental intervenida' })
+  @IsNotEmpty()
+  @IsString()
+  pieza: string;
+
   @ApiProperty({ example: 'Preventiva', description: 'Tipo de intervención clínica' })
   @IsNotEmpty()
   @IsString()
@@ -33,7 +38,7 @@ export class CreateIntervencionDto {
   pacienteId: number;
 
   @ApiProperty({ example: 'uuid-del-usuario', description: 'ID del profesional que realiza la intervención' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   usuarioId: string;
 

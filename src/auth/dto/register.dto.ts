@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsEnum, isNotEmpty, IsNotEmpty, IsArray, ArrayNotEmpty, ValidateIf } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsEnum, isNotEmpty, IsNotEmpty, IsArray, ArrayNotEmpty, ValidateIf, IsDateString } from 'class-validator';
 import { Role } from 'src/common/enums/role.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -11,9 +11,9 @@ export class RegisterDto {
   @IsEmail({}, { message: 'Email inválido' })
   email: string;
 
-  @ApiProperty({ example: 'securePass123', minLength: 6, description: 'Contraseña segura' })
+  @ApiProperty({ example: 'securePass123', minLength: 4, description: 'Contraseña segura' })
   @IsString()
-  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+  @MinLength(4, { message: 'La contraseña debe tener al menos 4 caracteres' })
   password: string;
 
   @ApiProperty({ enum: Role, isArray: true, example: [Role.ADMIN, Role.MEDICO] })
@@ -35,7 +35,8 @@ export class RegisterDto {
   @IsString()
   direccion?: string;
 
-  @ApiProperty({ example: '1990-05-12', required: false })
-  @IsString()
+  @ValidateIf((o) => o.fechaNacimiento !== '')
+  @IsDateString({}, { message: 'La fecha de nacimiento debe tener formato YYYY-MM-DD' })
   fechaNacimiento?: string;
+
 }

@@ -13,6 +13,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  MEDICO
+  ASISTENTE
+}
+
+enum EstadoUsuario {
+  Activo
+  Suspendido
+}
+
+enum EstadoPieza {
+  SANO
+  CARIES
+  ENDODONCIA
+  EXTRACCION
+  OBSERVACION
+}
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  password        String
+  roles           Role[]
+  name            String
+  specialty       String?
+  telefono        String?
+  direccion       String?
+  fechaNacimiento DateTime?
+  estado          EstadoUsuario @default(Activo)
+  createdAt       DateTime @default(now())
+
+  // 🔁 Relaciones inversas
+  odontograma     Odontograma[]
+  citas           Cita[]
+  intervenciones  Intervencion[] @relation("Interventor")
+  exportaciones   Intervencion[] @relation("Exportador")
+  creadoPacientes Paciente[]     @relation("CreadoPor")
+  modificadoPacientes Paciente[] @relation("ModificadoPor")
+}
+
+
 model Paciente {
   id              Int      @id @default(autoincrement())
   cedula          String   @unique
@@ -25,57 +67,16 @@ model Paciente {
   creadoEn        DateTime @default(now())
   actualizadoEn   DateTime @updatedAt
 
-  // 🔁 Relaciones inversas
-  citas          Cita[]
-  odontogramas   Odontograma[]
-  intervenciones Intervencion[]
-}
+  // 🔁 Auditoría
+  creadoPorId     String?
+  modificadoPorId String?
+  creadoPor       User?    @relation("CreadoPor", fields: [creadoPorId], references: [id])
+  modificadoPor   User?    @relation("ModificadoPor", fields: [modificadoPorId], references: [id])
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  roles     Role[]
-  name      String
-  specialty String?
-  telefono       String?  // opcional
-  direccion      String?  // opcional
-  fechaNacimiento DateTime? // opcional, útil para validación de edad
-  estado         EstadoUsuario   @default(Activo) // 'Activo' | 'Suspendido'
-  createdAt DateTime @default(now())
-
-  // 🔁 Relaciones inversas
-  odontograma    Odontograma[]
-  citas          Cita[]
-  intervenciones Intervencion[]
-}
-
-enum Role {
-  ADMIN
-  MEDICO
-  ASISTENTE
-}
-
-enum EstadoUsuario {
-  Activo
-  Suspendido
-}
-
-
-model Odontograma {
-  id                  String   @id @default(uuid())
-  pieza               String
-  cuadrante           String?
-  estado              String
-  tratamientoSugerido String   // ✅ Nuevo nombre semántico
-  fecha               DateTime
-  pacienteId          Int
-  usuarioId           String
-  createdAt           DateTime @default(now())
-
-  paciente            Paciente @relation(fields: [pacienteId], references: [id])
-  usuario             User     @relation(fields: [usuarioId], references: [id])
-  intervenciones      Intervencion[]
+  // 🔁 Relaciones clínicas
+  citas           Cita[]
+  odontogramas    Odontograma[]
+  intervenciones  Intervencion[]
 }
 
 model Cita {
@@ -87,26 +88,50 @@ model Cita {
   especialidad String
   usuarioId    String
   pacienteId   Int
+  createdAt    DateTime @default(now())
+
   usuario      User     @relation(fields: [usuarioId], references: [id])
   paciente     Paciente @relation(fields: [pacienteId], references: [id])
-  createdAt    DateTime @default(now())
+}
+
+model Odontograma {
+  id                  String   @id @default(uuid())
+  pieza               String
+  cuadrante           String?
+  estado              EstadoPieza
+  tratamientoSugerido String
+  fecha               DateTime
+  pacienteId          Int
+  usuarioId           String
+  createdAt           DateTime @default(now())
+
+  paciente            Paciente @relation(fields: [pacienteId], references: [id])
+  usuario             User     @relation(fields: [usuarioId], references: [id])
+  intervenciones      Intervencion[]
 }
 
 model Intervencion {
-  id                  String   @id @default(uuid())
-  tipo                String?
-  diagnostico         String
-  tratamientoRealizado String?  // ✅ Nuevo nombre semántico
-  fecha               DateTime
-  observaciones       String?
-  creadoEn            DateTime @default(now())
+  id                   String   @id @default(uuid())
+  pieza                String
+  tipo                 String?
+  diagnostico          String
+  tratamientoRealizado String?
+  fecha                DateTime
+  observaciones        String?
+  creadoEn             DateTime @default(now())
 
-  pacienteId          Int
-  usuarioId           String
-  odontogramaId       String
+  // 🔁 Auditoría y exportación
+  exportadoEn          DateTime?
+  exportadoPorId       String?
+  exportadoPor         User?    @relation("Exportador", fields: [exportadoPorId], references: [id])
 
-  paciente            Paciente     @relation(fields: [pacienteId], references: [id])
-  usuario             User         @relation(fields: [usuarioId], references: [id])
-  odontograma         Odontograma  @relation(fields: [odontogramaId], references: [id])
+  pacienteId           Int
+  usuarioId            String
+  odontogramaId        String
+
+  paciente             Paciente     @relation(fields: [pacienteId], references: [id])
+  usuario              User         @relation("Interventor", fields: [usuarioId], references: [id])
+  odontograma          Odontograma  @relation(fields: [odontogramaId], references: [id])
 }
+
 

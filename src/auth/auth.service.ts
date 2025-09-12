@@ -96,7 +96,10 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
       specialty: dto.specialty ?? '',
       telefono: dto.telefono,
       direccion: dto.direccion,
-      fechaNacimiento: dto.fechaNacimiento ? new Date(dto.fechaNacimiento) : undefined,
+      fechaNacimiento: dto.fechaNacimiento && !isNaN(Date.parse(dto.fechaNacimiento))
+        ? new Date(dto.fechaNacimiento)
+        : undefined,
+
     },
   });
 
