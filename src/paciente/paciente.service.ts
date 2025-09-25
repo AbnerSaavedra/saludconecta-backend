@@ -29,6 +29,8 @@ export class PacienteService {
   constructor(private readonly prisma: PrismaService) {}
 
   async crear(dto: CreatePacienteDto) {
+  console.log("Crear pac: ", dto);
+  try {
     const cedulaExistente = await this.prisma.paciente.findUnique({
       where: { cedula: dto.cedula },
     });
@@ -37,7 +39,7 @@ export class PacienteService {
       throw new BadRequestException('La cédula ya está registrada');
     }
 
-    return this.prisma.paciente.create({
+    const nuevo = await this.prisma.paciente.create({
       data: {
         cedula: dto.cedula,
         nombre: dto.nombre,
@@ -48,9 +50,17 @@ export class PacienteService {
         direccion: dto.direccion,
       },
     });
+
+    console.log("Paciente creado:", nuevo);
+    return nuevo;
+  } catch (err) {
+    console.error("Error al crear paciente:", err);
+    throw err;
   }
+}
 
   async listarTodos() {
+    console.log("Solicitud entrando svc")
     return this.prisma.paciente.findMany({
       orderBy: { creadoEn: 'desc' },
     });
@@ -123,6 +133,8 @@ export class PacienteService {
   }
 
   async registrarOdontograma(dto: DatosOdontograma) {
+    console.log("Odontograma dto srv: ", dto)
+
     return this.prisma.odontograma.create({
       data: {
         pieza: dto.pieza,
@@ -158,6 +170,7 @@ export class PacienteService {
 }
 
   async registrarIntervencion(dto: CreateIntervencionDto) {
+    console.log("registrarIntervencion: ", dto)
       return this.prisma.intervencion.create({
         data: {
         pieza: dto.pieza,
