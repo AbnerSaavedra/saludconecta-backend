@@ -15,7 +15,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true, // ✅ hace que esté disponible en todos los módulos
     }),
-    PacienteModule, PrismaModule, AuthModule, UsersModule, EspecialidadesModule, CitasModule, MailModule],
+    AuthModule, PacienteModule, PrismaModule, UsersModule, EspecialidadesModule, CitasModule, MailModule],
   controllers: [AppController],
   providers: [AppService],
 })

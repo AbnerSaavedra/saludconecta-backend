@@ -21,6 +21,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth
 } from '@nestjs/swagger';
 import { CreateOdontogramaDto } from './dto/CreateOdontogramaDto';
 import { CreateCitaDto } from './dto/CreateCitaDto';
@@ -31,15 +32,18 @@ import { esFechaIgualOPosterior } from 'src/utils/functions';
 
 @ApiTags('Pacientes')
 @Controller('pacientes')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard("jwt"))
 export class PacienteController {
   constructor(private readonly pacienteService: PacienteService) {}
 
   @Post()
   @ApiOperation({ summary: 'Crear paciente clínico' })
   @ApiResponse({ status: 201, description: 'Paciente creado exitosamente' })
+  @ApiBearerAuth('access-token')
   @ApiBody({ type: CreatePacienteDto })
   async crear(@Body() dto: CreatePacienteDto) {
+    console.log("Crear paciente DTO recibido:", JSON.stringify(dto, null, 2));
+    console.log("Crear paciente: ", dto)
     const paciente = await this.pacienteService.crear(dto);
     return {
       mensaje: 'Paciente creado exitosamente',
@@ -51,6 +55,7 @@ export class PacienteController {
   @ApiOperation({ summary: 'Listar todos los pacientes' })
   @ApiResponse({ status: 200, description: 'Listado completo de pacientes' })
   async listar() {
+    console.log("Solicitud entrando Ctll")
     const pacientes = await this.pacienteService.listarTodos();
     return {
       mensaje: `Se encontraron ${pacientes.length} pacientes registrados`,
@@ -133,9 +138,10 @@ export class PacienteController {
     @Param('id') id: number,
     @Req() req: Request
   ) {
+    console.log("Odontograma dto ctr: ", dto)
     const usuarioId = (req as any).user.id;
 
-    const odontograma = await this.pacienteService.registrarOdontograma({
+     return this.pacienteService.registrarOdontograma({
       ...dto,
       pacienteId: id,
       usuarioId,

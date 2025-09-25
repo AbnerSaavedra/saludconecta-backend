@@ -24,6 +24,8 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Login exitoso', type: LoginResponseDto })
   @ApiResponse({ status: 401, description: 'Credenciales inválidas o usuario no clínico' })
   login(@Body() dto: LoginDto): Promise<LoginResponseDto> {
+    console.log("Solicitud entrante: ", dto)
+    console.log('JWT_SECRET usado para firmar:', process.env.JWT_SECRET);
     return this.authService.login(dto);
   }
 

@@ -58,7 +58,7 @@ async login(dto: LoginDto): Promise<LoginResponseDto> {
       email: user.email,
       roles: user.roles, // ✅ plural y consistente
     });
-
+    
 
     return {
       accessToken: token,
